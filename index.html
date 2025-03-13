@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notebook App</title>
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <!-- Notifikasi -->
+    <div id="toast"
+      class="hidden fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg"></div>
+
+    <div class="app-container">
+      <!-- Header -->
+      <header class="app-header">
+        <div class="flex items-center">
+          <button id="menu-toggle" class="md:hidden p-2 mr-2 text-white">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="logo">
+            <i class="fas fa-book-open mr-2"></i>
+            <span>Notebook App</span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button id="theme-toggle" class="header-btn" title="Ganti Tema">
+            <i class="fas fa-moon dark:hidden"></i>
+            <i class="fas fa-sun hidden dark:block"></i>
+          </button>
+          <button id="settings-btn" class="header-btn" title="Pengaturan">
+            <i class="fas fa-cog"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <div class="content-wrapper">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+          <div class="sidebar-header">
+            <button id="new-note-btn" class="new-note-btn">
+              <i class="fas fa-plus mr-2"></i> Catatan Baru
+            </button>
+          </div>
+
+          <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="search-notes" placeholder="Cari catatan..."
+              class="search-input">
+          </div>
+
+          <div class="tabs">
+            <button class="tab active" data-tab="all">
+              <i class="fas fa-list-ul"></i> Semua Catatan
+            </button>
+            <button class="tab" data-tab="favorites">
+              <i class="fas fa-star"></i> Favorit
+            </button>
+            <button class="tab" data-tab="trash">
+              <i class="fas fa-trash"></i> Sampah
+            </button>
+          </div>
+
+          <div id="notes-list" class="notes-list">
+            <!-- Notes will be added here dynamically -->
+          </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+          <!-- Empty State -->
+          <div id="empty-state" class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <h2>Belum Ada Catatan</h2>
+            <p>Mulai dengan membuat catatan baru</p>
+            <button id="empty-new-note-btn" class="empty-new-btn">
+              <i class="fas fa-plus mr-2"></i> Buat Catatan Baru
+            </button>
+          </div>
+
+          <!-- Note Editor -->
+          <div id="note-editor" class="hidden">
+            <div class="editor-header">
+              <input type="text" id="note-title" placeholder="Judul catatan..."
+                class="note-title">
+              <div class="editor-actions">
+                <button id="pin-note-btn" class="action-btn"
+                  title="Pin Catatan">
+                  <i class="far fa-star"></i>
+                </button>
+                <button id="save-note-btn" class="action-btn primary"
+                  title="Simpan">
+                  <i class="fas fa-save"></i>
+                </button>
+                <div class="more-actions">
+                  <button id="more-actions-btn" class="action-btn"
+                    title="Lainnya">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                  <div id="more-menu" class="more-menu hidden">
+                    <button id="delete-note-btn" class="menu-item text-red-500">
+                      <i class="fas fa-trash"></i> Hapus Catatan
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="editor-toolbar">
+              <button class="toolbar-btn" data-command="bold" title="Bold">
+                <i class="fas fa-bold"></i>
+              </button>
+              <button class="toolbar-btn" data-command="italic" title="Italic">
+                <i class="fas fa-italic"></i>
+              </button>
+              <button class="toolbar-btn" data-command="underline"
+                title="Underline">
+                <i class="fas fa-underline"></i>
+              </button>
+              <button class="toolbar-btn" data-command="strikeThrough"
+                title="Strikethrough">
+                <i class="fas fa-strikethrough"></i>
+              </button>
+              <span class="toolbar-divider"></span>
+              <button class="toolbar-btn" data-command="justifyLeft"
+                title="Align Left">
+                <i class="fas fa-align-left"></i>
+              </button>
+              <button class="toolbar-btn" data-command="justifyCenter"
+                title="Align Center">
+                <i class="fas fa-align-center"></i>
+              </button>
+              <button class="toolbar-btn" data-command="justifyRight"
+                title="Align Right">
+                <i class="fas fa-align-right"></i>
+              </button>
+              <span class="toolbar-divider"></span>
+              <button class="toolbar-btn" data-command="insertUnorderedList"
+                title="Bullet List">
+                <i class="fas fa-list-ul"></i>
+              </button>
+              <button class="toolbar-btn" data-command="insertOrderedList"
+                title="Numbered List">
+                <i class="fas fa-list-ol"></i>
+              </button>
+              <span class="toolbar-divider"></span>
+              <button id="add-image-btn" class="toolbar-btn" title="Add Image">
+                <i class="fas fa-image"></i>
+              </button>
+              <input type="file" id="image-input" accept="image/*"
+                class="hidden">
+              <span class="toolbar-divider"></span>
+              <select id="font-select" class="font-select">
+                <option value="Poppins">Poppins</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+              </select>
+              <select id="font-size" class="font-size">
+                <option value="1">Kecil</option>
+                <option value="2">Normal</option>
+                <option value="3">Besar</option>
+                <option value="4">Sangat Besar</option>
+              </select>
+            </div>
+
+            <div id="note-content" class="note-content"
+              contenteditable="true"></div>
+
+            <div class="editor-footer">
+              <span id="note-date">Terakhir diubah: Baru saja</span>
+              <span id="note-wordcount">0 kata</span>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+      <div class="modal-overlay"></div>
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2>Pengaturan</h2>
+          <button id="close-settings" class="close-btn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Appearance -->
+          <div class="settings-section">
+            <h3>Tampilan</h3>
+            <div class="setting-item">
+              <label>Tema</label>
+              <div class="theme-buttons">
+                <button data-theme="light" class="theme-btn">
+                  <i class="fas fa-sun"></i> Terang
+                </button>
+                <button data-theme="dark" class="theme-btn">
+                  <i class="fas fa-moon"></i> Gelap
+                </button>
+                <button data-theme="system" class="theme-btn">
+                  <i class="fas fa-desktop"></i> Sistem
+                </button>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <label>Font</label>
+              <select id="app-font" class="settings-select">
+                <option value="Poppins">Poppins</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times New Roman</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Data Management -->
+          <div class="settings-section">
+            <h3>Data</h3>
+            <div class="setting-actions">
+              <button id="export-notes-btn" class="settings-btn primary">
+                <i class="fas fa-download mr-2"></i> Export Data
+              </button>
+              <button id="import-notes-btn" class="settings-btn secondary">
+                <i class="fas fa-upload mr-2"></i> Import Data
+              </button>
+              <input type="file" id="import-input" accept=".json"
+                class="hidden">
+            </div>
+            <div class="setting-actions">
+              <button id="reset-data-btn" class="settings-btn danger">
+                <i class="fas fa-trash mr-2"></i> Reset Semua Data
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="modal hidden">
+      <div class="modal-overlay"></div>
+      <div class="modal-container small">
+        <div class="modal-header">
+          <h2 id="confirm-title">Konfirmasi</h2>
+        </div>
+        <div class="modal-body">
+          <p id="confirm-message">Apakah Anda yakin?</p>
+          <div class="confirm-actions">
+            <button id="confirm-cancel"
+              class="confirm-btn secondary">Batal</button>
+            <button id="confirm-ok" class="confirm-btn danger">Hapus</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
